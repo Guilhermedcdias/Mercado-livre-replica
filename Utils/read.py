@@ -2,20 +2,23 @@ from Database.conect import conect
 
 
 def read(colletion):
-    if(colletion == 'vendedor'):
+    if (colletion == 'vendedor'):
         vendedor()
-    elif(colletion == 'cliente'):
+    elif (colletion == 'cliente'):
         cliente()
-    elif(colletion == 'produto'):
+    elif (colletion == 'produto'):
         produto()
-    elif(colletion == 'favorito'):
+    elif (colletion == 'favorito'):
         favoritos()
+    elif (colletion == 'compra'):
+        compra()
+
 
 def vendedor():
     print("Para ver um vendedor em especifico digite o cpf, se não basta apertar enter")
     cpf = input('CPF: ')
     # se o cpf for vazio ele vai mostrar todos os vendedores
-    if(cpf == ''):
+    if (cpf == ''):
         # selecionando o vendedor do banco
         mongo = conect()
 
@@ -40,7 +43,7 @@ def vendedor():
         collection = db['vendedor']
 
         vendedor = collection.find_one({'cpf': cpf})
-        if(vendedor == None):
+        if (vendedor == None):
             print('Vendedor não encontrado!')
         else:
             print('CPF: ' + vendedor['cpf'])
@@ -51,11 +54,12 @@ def vendedor():
 
     input('Aperte enter para continuar...')
 
+
 def cliente():
     print("Para ver um cliente em especifico digite o cpf, se não basta apertar enter")
     cpf = input('CPF: ')
     # se o cpf for vazio ele vai mostrar todos os clientes
-    if(cpf == ''):
+    if (cpf == ''):
         # selecionando o cliente do banco
         mongo = conect()
         db = mongo['mercado_livre']
@@ -74,7 +78,7 @@ def cliente():
         db = mongo['mercado_livre']
         collection = db['cliente']
         cliente = collection.find_one({'cpf': cpf})
-        if(cliente == None):
+        if (cliente == None):
             print('Cliente não encontrado!')
         else:
             print('CPF: ' + cliente['cpf'])
@@ -90,7 +94,7 @@ def produto():
     print("Para ver um produto em especifico digite o id, se não basta apertar enter")
     id = input('ID: ')
     # se o id for vazio ele vai mostrar todos os produtos
-    if(id == ''):
+    if (id == ''):
         # selecionando o produto do banco
         mongo = conect()
         db = mongo['mercado_livre']
@@ -110,7 +114,7 @@ def produto():
         db = mongo['mercado_livre']
         collection = db['produto']
         produto = collection.find_one({'id': int(id)})
-        if(produto == None):
+        if (produto == None):
             print('Produto não encontrado!')
         else:
             print('ID: ' + str(produto['id']))
@@ -127,7 +131,7 @@ def favoritos():
     print("Para ver os favoritos de um cliente em especifico digite o cpf, se não basta apertar enter")
     cpf = input('CPF: ')
     # se o cpf for vazio ele vai mostrar todos os favoritos
-    if(cpf == ''):
+    if (cpf == ''):
         # cliente não encontrado
         print('Cliente não encontrado!')
     else:
@@ -136,7 +140,7 @@ def favoritos():
         db = mongo['mercado_livre']
         collection = db['cliente']
         favoritos = collection.find_one({'cpf': cpf})
-        if(favoritos == None):
+        if (favoritos == None):
             print('cliente não encontrado!')
         else:
             for favorito in favoritos['favoritos']:
@@ -148,4 +152,39 @@ def favoritos():
                 print('-----------------------')
         mongo.close()
 
-    input('Aperte enter para continuar...') 
+    input('Aperte enter para continuar...')
+
+
+def compra():
+    mongo = conect()
+    db = mongo['mercado_livre']
+    print("Para ver as compras de um cliente em especifico digite o cpf, se não basta apertar enter")
+    cpf = input('CPF: ')
+    # se o cpf for vazio ele vai mostrar todas as compras
+    if (cpf == ''):
+        collection = db['compra']
+        compras = collection.find()
+        for compra in compras:
+            print('ID: ' + str(compra['id']))
+            print('Produto: ' + compra['produto']['nome'])
+            print('Vendedor: ' + compra['vendedor']['nome'])
+            print('-----------------------')
+    else:
+        # selecionando o compra do banco
+
+        collection = db['cliente']
+        compras = collection.find_one({'cpf': cpf})
+        if (compras == None):
+            print('cliente não encontrado!')
+        else:
+            collection = db['compra']
+
+            vendas = collection.find({'cliente': compras})
+            for venda in vendas:
+                print('ID: ' + str(venda['id']))
+                print('Produto: ' + venda['produto']['nome'])
+                print('Vendedor: ' + venda['vendedor']['nome'])
+                print('-----------------------')
+        mongo.close()
+
+    input('Aperte enter para continuar...')

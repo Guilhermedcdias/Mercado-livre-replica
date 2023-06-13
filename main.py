@@ -28,6 +28,10 @@ while True:
     print('14 - Delete Favorito')
     print('15 - Ver Favoritos')
     print('----------------------------------')
+    print('16 - Cadastrar compra')
+    print('17 - Delete compra')
+    print('18 - Ver compras')
+    print('----------------------------------')
     print('S - Sair')
     # Recebendo a opção
     opcao = input('Opção: ')
@@ -76,6 +80,15 @@ while True:
         os.system('cls')
     elif (opcao == 15 or opcao == '15'):
         read('favorito')
+        os.system('cls')
+    elif (opcao == 16 or opcao == '16'):
+        cadastrar('compra')
+        os.system('cls')
+    elif (opcao == 17 or opcao == '17'):
+        delete('compra')
+        os.system('cls')
+    elif (opcao == 18 or opcao == '18'):
+        read('compra')
         os.system('cls')
     elif (opcao == 'S' or opcao == 's'):
         break

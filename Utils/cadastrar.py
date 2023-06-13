@@ -12,6 +12,8 @@ def cadastrar(colletion):
         produto()
     elif (colletion == 'favorito'):
         favorito()
+    elif (colletion == 'compra'):
+        compra()
 
 
 def vendedor():
@@ -167,6 +169,73 @@ def favorito():
             # fechando a conexão
             mongo.close()
             print('Produto favoritado com sucesso!')
+        else:
+            print('Produto não encontrado!')
+    else:
+        print('Cliente não encontrado!')
+    
+    input('Pressione enter para continuar...')
+
+
+def compra():
+    # pegando dados do vendedor
+    mongo = conect()
+    # selecionando database mercado livre
+    db = mongo['mercado_livre']
+    # selecionando a collection vendedor
+    collection = db['cliente']
+    # pegando todos os vendedores
+    clientes = collection.find()
+    # mostrando todos os vendedores
+    for cliente in clientes:
+        print('CPF: ' + cliente['cpf'])
+        print('Nome: ' + cliente['nome'])
+        print('Email: ' + cliente['email'])
+        print('Telefone: ' + cliente['telefone'])
+        print('-----------------------')
+    
+    cli = input('CPF do cliente que vai comprar o produto: ')
+    # verificando se o vendedor existe
+    if (collection.find_one({'cpf': cli})):
+        # pegando todos os produtos
+        collection = db['produto']
+        produtos = collection.find()
+        # mostrando todos os produtos
+        for produto in produtos:
+            print('ID: ' + str(produto['id']))
+            print('Nome: ' + produto['nome'])
+            print('Descrição: ' + produto['descricao'])
+            print('Preço: ' + produto['preco'])
+            print('Quantidade: ' + produto['quantidade'])
+            print('-----------------------')
+        
+        prod = input('ID do produto que vai ser comprado: ')
+        # verificando se o produto existe
+
+        if (collection.find_one({'id': int(prod)})):
+            # pegando o produto
+            produto = collection.find_one({'id': int(prod)})
+            # pegando o cliente
+            collection = db['cliente']
+            cliente = collection.find_one({'cpf': cli})
+            # pegando o vendedor
+            collection = db['vendedor']
+            vendedor = collection.find_one({'cpf': produto['vendedor']['cpf']})
+            # inserindo compra na colletion compra
+            collection = db['compra']
+            # montando objeto
+            compra = {
+                'id': gerarId('compra'),
+                'produto': produto,
+                'cliente': cliente,
+                'vendedor': vendedor
+            }
+
+            # inserindo o objeto
+            collection.insert_one(compra)
+            # fechando a conexão
+            mongo.close()
+            print('Compra realizada com sucesso!')
         else:
             print('Produto não encontrado!')
     else:

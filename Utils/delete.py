@@ -10,6 +10,8 @@ def delete(colletion):
         produto()
     elif (colletion == 'favorito'):
         favorito()
+    elif (colletion == 'compra'):
+        compra()
 
 
 def vendedor():
@@ -106,6 +108,47 @@ def favorito():
                 collection.update_one({'cpf': cpf}, {'$set': cliente})
                 print('Favorito deletado com sucesso!')
                 break
+    else:
+        print('Cliente não encontrado!')
+    # fechando a conexão
+    mongo.close()
+
+    input('Pressione enter para continuar...')
+
+def compra():
+    # mostrando clientes
+    mongo = conect()
+    db = mongo['mercado_livre']
+    collection = db['cliente']
+    clientes = collection.find()
+    for cliente in clientes:
+        print('CPF: ' + cliente['cpf'])
+        print('Nome: ' + cliente['nome'])
+        print('Email: ' + cliente['email'])
+        print('Telefone: ' + cliente['telefone'])
+        print('-----------------------')
+    cpf = input('CPF do cliente: ')
+    # verificando se o cliente existe
+    if (collection.find_one({'cpf': cpf})):
+        # findall na colletion de compra where cpf = cpf
+        collection = db['compra']
+        compras = collection.find({'cpf': cpf})
+        for compra in compras:
+            print('ID: ' + str(compra['id']))
+            print('Produto: ' + compra['produto']['nome'])
+            print('Vendedor: ' + compra['vendedor']['nome'])
+            print('-----------------------')
+        id = input('ID da compra que deseja excluir: ')
+
+        # delete where id = id
+
+        delete = collection.delete_one({'id': int(id)})
+
+        if (delete.deleted_count > 0):
+            print('Compra deletada com sucesso!')
+        else:
+            print('Compra não encontrada!')
+
     else:
         print('Cliente não encontrado!')
     # fechando a conexão
