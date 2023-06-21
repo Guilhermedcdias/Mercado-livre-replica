@@ -64,8 +64,8 @@ def produto():
         print('-----------------------')
     id = input('ID: ')
     # Inserindo usando a classe do mongo cliente
-    if (collection.find_one({'id': id})):
-        collection.delete_one({'id': id})
+    if (collection.find_one({'id': int(id)})):
+        collection.delete_one({'id': int(id)})
         print('Produto deletado com sucesso!')
     else:
         print('Produto não encontrado!')
